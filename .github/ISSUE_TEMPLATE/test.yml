@@ -1,0 +1,6 @@
+name: Test Template
+description: Simple test
+body:
+  - type: textarea
+    attributes:
+      label: Test Field
