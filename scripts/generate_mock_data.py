@@ -7,13 +7,88 @@ covering Australia, saved in zarr format.
 
 import numpy as np
 import xarray as xr
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from scipy.ndimage import gaussian_filter
 import regionmask
 import warnings
 
 warnings.filterwarnings('ignore', category=FutureWarning)
+
+
+def generate_heatwave_anomaly(lons, lats, n_days, lon_min, lon_max):
+    """
+    Generate a 3D heatwave temperature anomaly field that moves west to east.
+
+    Parameters:
+    -----------
+    lons : array
+        Longitude coordinate array
+    lats : array
+        Latitude coordinate array
+    n_days : int
+        Number of days in the simulation
+    lon_min, lon_max : float
+        Longitude bounds for heatwave movement
+
+    Returns:
+    --------
+    anomaly : ndarray
+        3D array (time, lat, lon) with heatwave temperature anomalies
+    """
+    n_lat = len(lats)
+    n_lon = len(lons)
+
+    # Initialize anomaly array
+    anomaly = np.zeros((n_days, n_lat, n_lon))
+
+    # Heatwave parameters
+    max_intensity = 6.5  # Peak anomaly in °C (5-8°C range)
+    spatial_width = 12.0  # Width of heatwave in degrees longitude
+
+    # Create longitude meshgrid for distance calculations
+    lon_grid = np.tile(lons, (n_lat, 1))
+
+    print("Generating heatwave progression...")
+
+    for day in range(n_days):
+        # Calculate heatwave center longitude for this day
+        # Move from west to east over the time period
+        progress = day / (n_days - 1)  # 0 to 1
+        lon_center = lon_min + (lon_max - lon_min) * progress
+
+        # Temporal intensity factor (build up -> peak -> dissipate)
+        if day < 3:
+            # Days 0-2: Build up (0% -> 100%)
+            temporal_factor = day / 2.5
+        elif day < 7:
+            # Days 3-6: Peak (100%)
+            temporal_factor = 1.0
+        else:
+            # Days 7-9: Dissipate (100% -> 0%)
+            temporal_factor = 1.0 - ((day - 6) / 3.5)
+
+        # Spatial distribution - Gaussian centered at lon_center
+        # Distance from heatwave center (in longitude)
+        lon_distance = np.abs(lon_grid - lon_center)
+
+        # Gaussian spatial decay
+        spatial_factor = np.exp(-(lon_distance ** 2) / (2 * spatial_width ** 2))
+
+        # Combine temporal and spatial factors
+        anomaly[day, :, :] = max_intensity * temporal_factor * spatial_factor
+
+        # Add some random variation for realism
+        np.random.seed(42 + day)
+        random_var = np.random.normal(0, 0.3, (n_lat, n_lon))
+        anomaly[day, :, :] += random_var
+
+        # Apply smoothing to each day's anomaly for realistic gradients
+        anomaly[day, :, :] = gaussian_filter(anomaly[day, :, :], sigma=2)
+
+    print(f"Heatwave anomaly generated: max={anomaly.max():.1f}°C, mean={anomaly.mean():.1f}°C")
+
+    return anomaly
 
 
 def generate_australia_tmax():
@@ -60,13 +135,23 @@ def generate_australia_tmax():
     tmax = gaussian_filter(tmax, sigma=3)
 
     # Clip to realistic range
-    tmax = np.clip(tmax, 15, 45)
+    baseline_temp = np.clip(tmax, 15, 45)
 
-    # Create time coordinate (1 day)
-    time = [datetime(2024, 1, 15)]  # A summer day
+    # Create time coordinate (10 days)
+    start_date = datetime(2024, 1, 15)
+    time = [start_date + timedelta(days=i) for i in range(10)]
 
-    # Add time dimension to data
-    tmax_3d = tmax[np.newaxis, :, :]  # Shape: (1, lat, lon)
+    print(f"Time range: {time[0].date()} to {time[-1].date()}")
+
+    # Generate heatwave anomaly (3D: time, lat, lon)
+    heatwave_anomaly = generate_heatwave_anomaly(lons, lats, 10, lon_min, lon_max)
+
+    # Combine baseline temperature with heatwave anomaly for each day
+    # Baseline is 2D, anomaly is 3D, broadcast baseline to all time steps
+    tmax_3d = baseline_temp[np.newaxis, :, :] + heatwave_anomaly
+
+    # Clip final temperatures to realistic range
+    tmax_3d = np.clip(tmax_3d, 15, 45)
 
     # Create xarray Dataset
     ds = xr.Dataset(
@@ -110,12 +195,14 @@ def generate_australia_tmax():
 
     # Global attributes
     ds.attrs = {
-        "title": "Mock Australian Maximum Temperature Data",
+        "title": "Mock Australian Maximum Temperature Data with Moving Heatwave",
         "institution": "Dashboard Project",
-        "source": "Synthetic data for testing",
+        "source": "Synthetic data for testing - 10-day heatwave moving west to east",
         "Conventions": "CF-1.8",
         "crs": "EPSG:4326",
         "resolution_km": 10,
+        "temporal_extent": "10 days",
+        "heatwave_description": "Moderate heatwave (+5-8°C) moving from west to east",
         "created": datetime.now().isoformat(),
     }
 
@@ -152,10 +239,14 @@ def main():
     print("\nDataset summary:")
     print(ds)
 
-    print(f"\nTemperature statistics:")
+    print(f"\nTemperature statistics (across all days):")
     print(f"  Min: {float(ds['tmax'].min()):.1f}°C")
     print(f"  Max: {float(ds['tmax'].max()):.1f}°C")
     print(f"  Mean: {float(ds['tmax'].mean()):.1f}°C")
+    print(f"\nPer-day statistics:")
+    for i, t in enumerate(ds.time.values):
+        day_data = ds['tmax'].isel(time=i)
+        print(f"  Day {i} ({str(t)[:10]}): min={float(day_data.min()):.1f}°C, max={float(day_data.max()):.1f}°C, mean={float(day_data.mean()):.1f}°C")
 
     # Save to zarr
     output_path = Path(__file__).parent.parent / "data" / "australia_tmax.zarr"

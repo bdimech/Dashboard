@@ -1,12 +1,14 @@
 {
   "attributes": {
-    "title": "Mock Australian Maximum Temperature Data",
+    "title": "Mock Australian Maximum Temperature Data with Moving Heatwave",
     "institution": "Dashboard Project",
-    "source": "Synthetic data for testing",
+    "source": "Synthetic data for testing - 10-day heatwave moving west to east",
     "Conventions": "CF-1.8",
     "crs": "EPSG:4326",
     "resolution_km": 10,
-    "created": "2026-02-11T19:33:06.117174"
+    "temporal_extent": "10 days",
+    "heatwave_description": "Moderate heatwave (+5-8\u00b0C) moving from west to east",
+    "created": "2026-02-11T20:04:36.095220"
   },
   "zarr_format": 3,
   "consolidated_metadata": {
@@ -113,14 +115,14 @@
       },
       "time": {
         "shape": [
-          1
+          10
         ],
         "data_type": "int64",
         "chunk_grid": {
           "name": "regular",
           "configuration": {
             "chunk_shape": [
-              1
+              10
             ]
           }
         },
@@ -161,7 +163,7 @@
       },
       "tmax": {
         "shape": [
-          1,
+          10,
           378,
           456
         ],
@@ -170,9 +172,9 @@
           "name": "regular",
           "configuration": {
             "chunk_shape": [
-              1,
+              3,
               189,
-              456
+              228
             ]
           }
         },
