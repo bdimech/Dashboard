@@ -1,0 +1,221 @@
+{
+  "attributes": {
+    "title": "Mock Australian Maximum Temperature Data",
+    "institution": "Dashboard Project",
+    "source": "Synthetic data for testing",
+    "Conventions": "CF-1.8",
+    "crs": "EPSG:4326",
+    "resolution_km": 10,
+    "created": "2026-02-11T19:33:06.117174"
+  },
+  "zarr_format": 3,
+  "consolidated_metadata": {
+    "kind": "inline",
+    "must_understand": false,
+    "metadata": {
+      "lat": {
+        "shape": [
+          378
+        ],
+        "data_type": "float64",
+        "chunk_grid": {
+          "name": "regular",
+          "configuration": {
+            "chunk_shape": [
+              378
+            ]
+          }
+        },
+        "chunk_key_encoding": {
+          "name": "default",
+          "configuration": {
+            "separator": "/"
+          }
+        },
+        "fill_value": "NaN",
+        "codecs": [
+          {
+            "name": "bytes",
+            "configuration": {
+              "endian": "little"
+            }
+          },
+          {
+            "name": "zstd",
+            "configuration": {
+              "level": 0,
+              "checksum": false
+            }
+          }
+        ],
+        "attributes": {
+          "long_name": "Latitude",
+          "standard_name": "latitude",
+          "units": "degrees_north",
+          "axis": "Y",
+          "_FillValue": "AAAAAAAA+H8="
+        },
+        "dimension_names": [
+          "lat"
+        ],
+        "zarr_format": 3,
+        "node_type": "array",
+        "storage_transformers": []
+      },
+      "lon": {
+        "shape": [
+          456
+        ],
+        "data_type": "float64",
+        "chunk_grid": {
+          "name": "regular",
+          "configuration": {
+            "chunk_shape": [
+              456
+            ]
+          }
+        },
+        "chunk_key_encoding": {
+          "name": "default",
+          "configuration": {
+            "separator": "/"
+          }
+        },
+        "fill_value": "NaN",
+        "codecs": [
+          {
+            "name": "bytes",
+            "configuration": {
+              "endian": "little"
+            }
+          },
+          {
+            "name": "zstd",
+            "configuration": {
+              "level": 0,
+              "checksum": false
+            }
+          }
+        ],
+        "attributes": {
+          "long_name": "Longitude",
+          "standard_name": "longitude",
+          "units": "degrees_east",
+          "axis": "X",
+          "_FillValue": "AAAAAAAA+H8="
+        },
+        "dimension_names": [
+          "lon"
+        ],
+        "zarr_format": 3,
+        "node_type": "array",
+        "storage_transformers": []
+      },
+      "time": {
+        "shape": [
+          1
+        ],
+        "data_type": "int64",
+        "chunk_grid": {
+          "name": "regular",
+          "configuration": {
+            "chunk_shape": [
+              1
+            ]
+          }
+        },
+        "chunk_key_encoding": {
+          "name": "default",
+          "configuration": {
+            "separator": "/"
+          }
+        },
+        "fill_value": 0,
+        "codecs": [
+          {
+            "name": "bytes",
+            "configuration": {
+              "endian": "little"
+            }
+          },
+          {
+            "name": "zstd",
+            "configuration": {
+              "level": 0,
+              "checksum": false
+            }
+          }
+        ],
+        "attributes": {
+          "long_name": "Time",
+          "standard_name": "time",
+          "units": "days since 2024-01-15 00:00:00",
+          "calendar": "proleptic_gregorian"
+        },
+        "dimension_names": [
+          "time"
+        ],
+        "zarr_format": 3,
+        "node_type": "array",
+        "storage_transformers": []
+      },
+      "tmax": {
+        "shape": [
+          1,
+          378,
+          456
+        ],
+        "data_type": "float32",
+        "chunk_grid": {
+          "name": "regular",
+          "configuration": {
+            "chunk_shape": [
+              1,
+              189,
+              456
+            ]
+          }
+        },
+        "chunk_key_encoding": {
+          "name": "default",
+          "configuration": {
+            "separator": "/"
+          }
+        },
+        "fill_value": "NaN",
+        "codecs": [
+          {
+            "name": "bytes",
+            "configuration": {
+              "endian": "little"
+            }
+          },
+          {
+            "name": "zstd",
+            "configuration": {
+              "level": 0,
+              "checksum": false
+            }
+          }
+        ],
+        "attributes": {
+          "long_name": "Daily Maximum Temperature",
+          "standard_name": "air_temperature",
+          "units": "degC",
+          "valid_min": 15.0,
+          "valid_max": 45.0,
+          "_FillValue": "AAAAAAAA+H8="
+        },
+        "dimension_names": [
+          "time",
+          "lat",
+          "lon"
+        ],
+        "zarr_format": 3,
+        "node_type": "array",
+        "storage_transformers": []
+      }
+    }
+  },
+  "node_type": "group"
+}

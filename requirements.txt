@@ -1,0 +1,7 @@
+xarray
+numpy
+zarr
+matplotlib
+scipy
+regionmask
+geopandas
