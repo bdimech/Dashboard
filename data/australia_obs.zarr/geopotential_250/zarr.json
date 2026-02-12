@@ -1,0 +1,57 @@
+{
+  "shape": [
+    10,
+    378,
+    456
+  ],
+  "data_type": "float32",
+  "chunk_grid": {
+    "name": "regular",
+    "configuration": {
+      "chunk_shape": [
+        3,
+        189,
+        228
+      ]
+    }
+  },
+  "chunk_key_encoding": {
+    "name": "default",
+    "configuration": {
+      "separator": "/"
+    }
+  },
+  "fill_value": "NaN",
+  "codecs": [
+    {
+      "name": "bytes",
+      "configuration": {
+        "endian": "little"
+      }
+    },
+    {
+      "name": "zstd",
+      "configuration": {
+        "level": 0,
+        "checksum": false
+      }
+    }
+  ],
+  "attributes": {
+    "long_name": "Geopotential Height at 250 hPa",
+    "standard_name": "geopotential_height",
+    "units": "m",
+    "pressure_level": "250 hPa",
+    "valid_min": 10300.0,
+    "valid_max": 10700.0,
+    "_FillValue": "AAAAAAAA+H8="
+  },
+  "dimension_names": [
+    "time",
+    "lat",
+    "lon"
+  ],
+  "zarr_format": 3,
+  "node_type": "array",
+  "storage_transformers": []
+}

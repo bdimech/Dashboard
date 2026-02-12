@@ -217,6 +217,55 @@ def generate_baseline_precipitation(lat_grid, lon_grid, lat_min, lat_max):
     return baseline
 
 
+def generate_simple_variable(lat_grid, lon_grid, n_days, baseline, lat_gradient, noise_std, seed=42):
+    """
+    Quick and dirty variable generation with baseline + latitude gradient + noise.
+
+    Parameters:
+    -----------
+    lat_grid : ndarray
+        2D latitude meshgrid
+    lon_grid : ndarray
+        2D longitude meshgrid
+    n_days : int
+        Number of days
+    baseline : float
+        Baseline value for southern Australia
+    lat_gradient : float
+        Change from south to north (added to baseline)
+    noise_std : float
+        Standard deviation of random noise
+    seed : int
+        Random seed for reproducibility
+
+    Returns:
+    --------
+    field_3d : ndarray
+        3D array (time, lat, lon) with generated values
+    """
+    n_lat, n_lon = lat_grid.shape
+
+    # Create baseline field with latitude gradient
+    lat_normalized = (lat_grid - lat_grid.min()) / (lat_grid.max() - lat_grid.min())
+    field_2d = baseline + lat_gradient * lat_normalized
+
+    # Add spatial noise
+    np.random.seed(seed)
+    spatial_noise = np.random.normal(0, noise_std, (n_lat, n_lon))
+    field_2d = field_2d + spatial_noise
+
+    # Smooth it for realistic gradients
+    field_2d = gaussian_filter(field_2d, sigma=2)
+
+    # Repeat for all days with slight daily variation
+    field_3d = np.zeros((n_days, n_lat, n_lon))
+    for day in range(n_days):
+        daily_variation = np.random.normal(0, noise_std * 0.3, (n_lat, n_lon))
+        field_3d[day] = field_2d + daily_variation
+
+    return field_3d
+
+
 def generate_australia_tmax():
     """Generate mock maximum temperature data for Australia."""
 
@@ -295,11 +344,60 @@ def generate_australia_tmax():
     # Clip to realistic range (0-50mm/day)
     precip_3d = np.clip(precip_3d, 0, 50)
 
-    # Create xarray Dataset
+    # Generate additional 9 variables using simple mock data
+    print("\nGenerating additional meteorological variables...")
+
+    # Temperature - tmin (cooler in south, warmer in north, ~10°C below tmax)
+    tmin_3d = generate_simple_variable(lat_grid, lon_grid, 10, baseline=15, lat_gradient=10, noise_std=2.0, seed=60)
+    tmin_3d = np.clip(tmin_3d, 5, 30)
+
+    # Humidity - rh (higher in north/tropical, lower in south)
+    rh_3d = generate_simple_variable(lat_grid, lon_grid, 10, baseline=40, lat_gradient=25, noise_std=5.0, seed=61)
+    rh_3d = np.clip(rh_3d, 20, 90)
+
+    # Wind average - relatively uniform with slight variation
+    wind_avg_3d = generate_simple_variable(lat_grid, lon_grid, 10, baseline=4, lat_gradient=2, noise_std=1.0, seed=62)
+    wind_avg_3d = np.clip(wind_avg_3d, 0.5, 12)
+
+    # Wind gusts - just multiply wind_avg by 1.5-2.5
+    np.random.seed(63)
+    gust_factor = np.random.uniform(1.5, 2.5, wind_avg_3d.shape)
+    wind_gust_3d = wind_avg_3d * gust_factor
+    wind_gust_3d = np.clip(wind_gust_3d, 1, 25)
+
+    # Surface pressure - relatively uniform
+    pressure_sfc_3d = generate_simple_variable(lat_grid, lon_grid, 10, baseline=1013, lat_gradient=3, noise_std=2.0, seed=64)
+    pressure_sfc_3d = np.clip(pressure_sfc_3d, 1000, 1025)
+
+    # Geopotential heights at different pressure levels
+    geopotential_850_3d = generate_simple_variable(lat_grid, lon_grid, 10, baseline=1500, lat_gradient=10, noise_std=5.0, seed=65)
+    geopotential_850_3d = np.clip(geopotential_850_3d, 1400, 1600)
+
+    geopotential_700_3d = generate_simple_variable(lat_grid, lon_grid, 10, baseline=3000, lat_gradient=15, noise_std=8.0, seed=66)
+    geopotential_700_3d = np.clip(geopotential_700_3d, 2900, 3100)
+
+    geopotential_500_3d = generate_simple_variable(lat_grid, lon_grid, 10, baseline=5500, lat_gradient=20, noise_std=12.0, seed=67)
+    geopotential_500_3d = np.clip(geopotential_500_3d, 5400, 5700)
+
+    geopotential_250_3d = generate_simple_variable(lat_grid, lon_grid, 10, baseline=10500, lat_gradient=30, noise_std=20.0, seed=68)
+    geopotential_250_3d = np.clip(geopotential_250_3d, 10300, 10700)
+
+    print("All 11 variables generated!")
+
+    # Create xarray Dataset with all 11 variables
     ds = xr.Dataset(
         data_vars={
             "tmax": (["time", "lat", "lon"], tmax_3d.astype(np.float32)),
-            "precip": (["time", "lat", "lon"], precip_3d.astype(np.float32))
+            "tmin": (["time", "lat", "lon"], tmin_3d.astype(np.float32)),
+            "precip": (["time", "lat", "lon"], precip_3d.astype(np.float32)),
+            "rh": (["time", "lat", "lon"], rh_3d.astype(np.float32)),
+            "wind_avg": (["time", "lat", "lon"], wind_avg_3d.astype(np.float32)),
+            "wind_gust": (["time", "lat", "lon"], wind_gust_3d.astype(np.float32)),
+            "pressure_sfc": (["time", "lat", "lon"], pressure_sfc_3d.astype(np.float32)),
+            "geopotential_850": (["time", "lat", "lon"], geopotential_850_3d.astype(np.float32)),
+            "geopotential_700": (["time", "lat", "lon"], geopotential_700_3d.astype(np.float32)),
+            "geopotential_500": (["time", "lat", "lon"], geopotential_500_3d.astype(np.float32)),
+            "geopotential_250": (["time", "lat", "lon"], geopotential_250_3d.astype(np.float32)),
         },
         coords={
             "time": time,
@@ -323,6 +421,82 @@ def generate_australia_tmax():
         "units": "mm",
         "valid_min": 0.0,
         "valid_max": 50.0,
+    }
+
+    ds["tmin"].attrs = {
+        "long_name": "Daily Minimum Temperature",
+        "standard_name": "air_temperature",
+        "units": "degC",
+        "valid_min": 5.0,
+        "valid_max": 30.0,
+    }
+
+    ds["rh"].attrs = {
+        "long_name": "Relative Humidity",
+        "standard_name": "relative_humidity",
+        "units": "%",
+        "valid_min": 20.0,
+        "valid_max": 90.0,
+    }
+
+    ds["wind_avg"].attrs = {
+        "long_name": "Average Wind Speed",
+        "standard_name": "wind_speed",
+        "units": "m s-1",
+        "valid_min": 0.5,
+        "valid_max": 12.0,
+    }
+
+    ds["wind_gust"].attrs = {
+        "long_name": "Maximum Wind Gust Speed",
+        "standard_name": "wind_speed_of_gust",
+        "units": "m s-1",
+        "valid_min": 1.0,
+        "valid_max": 25.0,
+    }
+
+    ds["pressure_sfc"].attrs = {
+        "long_name": "Surface Air Pressure",
+        "standard_name": "surface_air_pressure",
+        "units": "hPa",
+        "valid_min": 1000.0,
+        "valid_max": 1025.0,
+    }
+
+    ds["geopotential_850"].attrs = {
+        "long_name": "Geopotential Height at 850 hPa",
+        "standard_name": "geopotential_height",
+        "units": "m",
+        "pressure_level": "850 hPa",
+        "valid_min": 1400.0,
+        "valid_max": 1600.0,
+    }
+
+    ds["geopotential_700"].attrs = {
+        "long_name": "Geopotential Height at 700 hPa",
+        "standard_name": "geopotential_height",
+        "units": "m",
+        "pressure_level": "700 hPa",
+        "valid_min": 2900.0,
+        "valid_max": 3100.0,
+    }
+
+    ds["geopotential_500"].attrs = {
+        "long_name": "Geopotential Height at 500 hPa",
+        "standard_name": "geopotential_height",
+        "units": "m",
+        "pressure_level": "500 hPa",
+        "valid_min": 5400.0,
+        "valid_max": 5700.0,
+    }
+
+    ds["geopotential_250"].attrs = {
+        "long_name": "Geopotential Height at 250 hPa",
+        "standard_name": "geopotential_height",
+        "units": "m",
+        "pressure_level": "250 hPa",
+        "valid_min": 10300.0,
+        "valid_max": 10700.0,
     }
 
     ds["lat"].attrs = {
@@ -372,8 +546,8 @@ def generate_australia_tmax():
         australia_region = (aus_mask == 137)
 
         # Apply mask to all data variables (set non-Australia areas to NaN)
-        ds['tmax'] = ds['tmax'].where(australia_region)
-        ds['precip'] = ds['precip'].where(australia_region)
+        for var in ds.data_vars:
+            ds[var] = ds[var].where(australia_region)
 
         print("Land mask applied successfully")
     except Exception as e:
@@ -405,18 +579,47 @@ def generate_forecast_from_obs(obs_ds):
     # Create a copy of the observation dataset
     fc_ds = obs_ds.copy(deep=True)
 
-    # For precipitation: multiply by 1.4 (40% overprediction on average)
-    # This overpredicts the volume while maintaining the spatial pattern
+    # Apply forecast biases to all variables
+    # Precipitation: multiply by 1.4 (40% overprediction)
     fc_ds['precip'] = fc_ds['precip'] * 1.4
-
-    # Add small random errors for realism (±10% relative variation)
-    np.random.seed(200)  # For reproducibility
-    shape = fc_ds['precip'].shape
-    random_factor = np.random.normal(1.0, 0.1, shape)
-    fc_ds['precip'] = fc_ds['precip'] * random_factor
-
-    # Clip to realistic range
+    np.random.seed(200)
+    fc_ds['precip'] = fc_ds['precip'] * np.random.normal(1.0, 0.1, fc_ds['precip'].shape)
     fc_ds['precip'] = np.clip(fc_ds['precip'], 0, 60)
+
+    # Temperature (tmax): +0.5°C bias
+    fc_ds['tmax'] = fc_ds['tmax'] + 0.5
+
+    # Temperature (tmin): +0.5°C bias
+    fc_ds['tmin'] = fc_ds['tmin'] + 0.5
+
+    # Humidity: +2% bias
+    fc_ds['rh'] = fc_ds['rh'] + 2.0
+    fc_ds['rh'] = np.clip(fc_ds['rh'], 20, 90)
+
+    # Wind average: -0.3 m/s bias (underpredict)
+    fc_ds['wind_avg'] = fc_ds['wind_avg'] - 0.3
+    fc_ds['wind_avg'] = np.clip(fc_ds['wind_avg'], 0.5, 12)
+
+    # Wind gust: -0.5 m/s bias (underpredict)
+    fc_ds['wind_gust'] = fc_ds['wind_gust'] - 0.5
+    fc_ds['wind_gust'] = np.clip(fc_ds['wind_gust'], 1, 25)
+
+    # Surface pressure: +1 hPa bias
+    fc_ds['pressure_sfc'] = fc_ds['pressure_sfc'] + 1.0
+    fc_ds['pressure_sfc'] = np.clip(fc_ds['pressure_sfc'], 1000, 1025)
+
+    # Geopotential heights: biases scaling with height
+    fc_ds['geopotential_850'] = fc_ds['geopotential_850'] + 5.0
+    fc_ds['geopotential_850'] = np.clip(fc_ds['geopotential_850'], 1400, 1600)
+
+    fc_ds['geopotential_700'] = fc_ds['geopotential_700'] + 8.0
+    fc_ds['geopotential_700'] = np.clip(fc_ds['geopotential_700'], 2900, 3100)
+
+    fc_ds['geopotential_500'] = fc_ds['geopotential_500'] + 12.0
+    fc_ds['geopotential_500'] = np.clip(fc_ds['geopotential_500'], 5400, 5700)
+
+    fc_ds['geopotential_250'] = fc_ds['geopotential_250'] + 15.0
+    fc_ds['geopotential_250'] = np.clip(fc_ds['geopotential_250'], 10300, 10700)
 
     # Update metadata to indicate this is forecast data
     fc_ds.attrs['title'] = "Mock Australian Meteorological Data - Forecast Dataset"

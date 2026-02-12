@@ -9,7 +9,7 @@
     "temporal_extent": "10 days",
     "heatwave_description": "Moderate heatwave (+5-8\u00b0C) moving from west to east",
     "rainfall_description": "Circular rainfall system (250km radius, 10-30mm/day peak) moving from west to east at -27\u00b0 latitude",
-    "created": "2026-02-12T20:34:20.029822"
+    "created": "2026-02-12T20:42:49.210975"
   },
   "zarr_format": 3,
   "consolidated_metadata": {
