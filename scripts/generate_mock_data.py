@@ -91,9 +91,9 @@ def generate_heatwave_anomaly(lons, lats, n_days, lon_min, lon_max):
     return anomaly
 
 
-def generate_rainfall_anomaly(lons, lats, n_days, lon_min, lon_max):
+def generate_rainfall_anomaly(lons, lats, n_days, lon_min, lon_max, lat_min, lat_max):
     """
-    Generate a 3D rainfall anomaly field (500km-wide band) moving west to east.
+    Generate a 3D rainfall anomaly field (circular 250km radius) moving west to east.
 
     Parameters:
     -----------
@@ -104,7 +104,9 @@ def generate_rainfall_anomaly(lons, lats, n_days, lon_min, lon_max):
     n_days : int
         Number of days in the simulation
     lon_min, lon_max : float
-        Longitude bounds for rainfall band movement
+        Longitude bounds for rainfall system movement
+    lat_min, lat_max : float
+        Latitude bounds for the domain
 
     Returns:
     --------
@@ -117,18 +119,21 @@ def generate_rainfall_anomaly(lons, lats, n_days, lon_min, lon_max):
     # Initialize anomaly array
     anomaly = np.zeros((n_days, n_lat, n_lon))
 
-    # Rainfall band parameters
-    # 500km ÷ 111km/degree ≈ 4.5°
-    spatial_width = 4.5  # Width of rainfall band in degrees longitude (narrower than heatwave)
+    # Circular rainfall system parameters
+    # 250km radius ÷ 111km/degree ≈ 2.25°
+    spatial_radius = 2.25  # Radius of circular rainfall system in degrees
     max_rainfall = 25.0  # Peak rainfall intensity in mm/day
 
-    # Create longitude meshgrid for distance calculations
-    lon_grid = np.tile(lons, (n_lat, 1))
+    # Create lat/lon meshgrids for distance calculations
+    lon_grid, lat_grid = np.meshgrid(lons, lats)
 
-    print("Generating rainfall band progression...")
+    # Center latitude for the rainfall system (central Australia)
+    lat_center = (lat_min + lat_max) / 2  # Approximately -27°
+
+    print("Generating circular rainfall system progression...")
 
     for day in range(n_days):
-        # Calculate rainfall band center longitude for this day
+        # Calculate rainfall system center longitude for this day
         # Move from west to east (same as heatwave)
         progress = day / (n_days - 1)  # 0 to 1
         lon_center = lon_min + (lon_max - lon_min) * progress
@@ -144,12 +149,14 @@ def generate_rainfall_anomaly(lons, lats, n_days, lon_min, lon_max):
             # Days 7-9: Dissipate (100% -> 0%)
             temporal_factor = 1.0 - (day - 6) / 3.0
 
-        # Spatial distribution - Gaussian centered at lon_center
-        # Distance from rainfall band center (in longitude)
-        lon_distance = np.abs(lon_grid - lon_center)
+        # Circular spatial distribution - Gaussian centered at (lon_center, lat_center)
+        # Calculate radial distance from center point
+        lon_distance = lon_grid - lon_center
+        lat_distance = lat_grid - lat_center
+        radial_distance = np.sqrt(lon_distance**2 + lat_distance**2)
 
-        # Gaussian spatial decay (narrower than heatwave)
-        spatial_factor = np.exp(-(lon_distance ** 2) / (2 * spatial_width ** 2))
+        # Gaussian spatial decay based on radial distance (circular pattern)
+        spatial_factor = np.exp(-(radial_distance ** 2) / (2 * spatial_radius ** 2))
 
         # Combine temporal and spatial factors
         anomaly[day, :, :] = max_rainfall * temporal_factor * spatial_factor
@@ -166,6 +173,7 @@ def generate_rainfall_anomaly(lons, lats, n_days, lon_min, lon_max):
         anomaly[day, :, :] = np.clip(anomaly[day, :, :], 0, None)
 
     print(f"Rainfall anomaly generated: max={anomaly.max():.1f}mm/day, mean={anomaly.mean():.1f}mm/day")
+    print(f"Rainfall system center: latitude {lat_center:.1f}°, moving longitude {lon_min:.1f}° to {lon_max:.1f}°")
 
     return anomaly
 
@@ -278,7 +286,7 @@ def generate_australia_tmax():
     baseline_precip = generate_baseline_precipitation(lat_grid, lon_grid, lat_min, lat_max)
 
     # Generate rainfall anomaly (3D: time, lat, lon)
-    rainfall_anomaly = generate_rainfall_anomaly(lons, lats, 10, lon_min, lon_max)
+    rainfall_anomaly = generate_rainfall_anomaly(lons, lats, 10, lon_min, lon_max, lat_min, lat_max)
 
     # Combine baseline with rainfall anomaly
     # Baseline is 2D, anomaly is 3D, broadcast baseline to all time steps
@@ -346,7 +354,7 @@ def generate_australia_tmax():
         "resolution_km": 10,
         "temporal_extent": "10 days",
         "heatwave_description": "Moderate heatwave (+5-8°C) moving from west to east",
-        "rainfall_description": "500km rainfall band (10-30mm/day peak) moving from west to east",
+        "rainfall_description": "Circular rainfall system (250km radius, 10-30mm/day peak) moving from west to east at -27° latitude",
         "created": datetime.now().isoformat(),
     }
 

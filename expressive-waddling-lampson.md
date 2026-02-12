@@ -42,10 +42,10 @@ Transform the current single-variable (tmax) dataset into comprehensive forecast
    - Relationship: tmin typically 60-70% of tmax anomaly
 
 2. **Precipitation (precip)**
-   - Independent 500km-wide rainfall band moving west-to-east (same direction as heatwave)
+   - Independent circular rainfall system (250km radius) moving west-to-east (same direction as heatwave)
    - Overlaps with heatwave temporally (same 10-day period)
-   - Baseline: 0-5mm/day, rainfall band adds 10-30mm/day peak
-   - Narrower spatial extent than heatwave (4.5° vs 12° longitude width)
+   - Baseline: 0-5mm/day, rainfall system adds 10-30mm/day peak
+   - Circular pattern centered at mid-latitude, smaller extent than heatwave (2.25° radius vs 12° width)
 
 3. **Relative Humidity (rh)**
    - Reduced during heatwave
