@@ -29,10 +29,32 @@ function MapCanvas() {
 
     if (!canvas || !container || !meteorologicalData) return;
 
-    // Set canvas size to match container
+    // Calculate data bounds aspect ratio
+    const { lat: lats, lon: lons } = meteorologicalData.metadata;
+    const latRange = Math.max(...lats) - Math.min(...lats);
+    const lonRange = Math.max(...lons) - Math.min(...lons);
+    const dataAspectRatio = lonRange / latRange; // width / height
+
+    // Get container size
     const rect = container.getBoundingClientRect();
-    canvas.width = rect.width;
-    canvas.height = rect.height;
+    const containerWidth = rect.width;
+    const containerHeight = rect.height;
+
+    // Calculate canvas size maintaining aspect ratio
+    let canvasWidth, canvasHeight;
+
+    if (containerWidth / containerHeight > dataAspectRatio) {
+      // Container is wider than data - constrain by height
+      canvasHeight = containerHeight;
+      canvasWidth = containerHeight * dataAspectRatio;
+    } else {
+      // Container is taller than data - constrain by width
+      canvasWidth = containerWidth;
+      canvasHeight = containerWidth / dataAspectRatio;
+    }
+
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
 
     // Get current data and range
     const data = getCurrentData();
@@ -103,11 +125,14 @@ function MapCanvas() {
       w="100%"
       h="100%"
       position="relative"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
     >
       <canvas
         ref={canvasRef}
         onClick={handleClick}
-        style={{ cursor: 'crosshair', width: '100%', height: '100%' }}
+        style={{ cursor: 'crosshair', display: 'block' }}
       />
     </Box>
   );

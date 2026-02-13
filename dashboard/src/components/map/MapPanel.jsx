@@ -8,7 +8,7 @@ import MapLegend from './MapLegend';
 
 function MapPanel() {
   return (
-    <VStack spacing={3} h="100%" align="stretch">
+    <VStack gap={3} h="100%" align="stretch">
       {/* Map canvas - takes most of the space */}
       <Box flex="1" minH="0">
         <MapCanvas />

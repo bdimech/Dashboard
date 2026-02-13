@@ -12,7 +12,9 @@ import {
   Legend,
   ResponsiveContainer
 } from 'recharts';
-import { Box, VStack, Heading, Text, HStack, Badge } from '@chakra-ui/react';
+import { Box, VStack, Heading, Text, HStack, Center } from '@chakra-ui/react';
+import { Badge } from '@chakra-ui/react';
+import { MdLocationOn } from 'react-icons/md';
 import { useDataStore } from '../../store/dataStore';
 import { VARIABLES } from '../../constants/variables';
 
@@ -24,7 +26,24 @@ function TimeSeriesChart() {
   const varInfo = VARIABLES[variable];
 
   if (!timeSeriesData) {
-    return null; // Show nothing if no point selected
+    // Show empty state if no point selected
+    return (
+      <Box h="100%">
+        <Heading size="sm" mb={3} color="gray.700">
+          Time Series
+        </Heading>
+        <Center h="calc(100% - 40px)" minH="200px">
+          <VStack gap={3}>
+            <MdLocationOn size={40} color="#CBD5E0" />
+            <Text color="gray.500" textAlign="center" fontSize="sm">
+              Click on the map to view
+              <br />
+              time series data
+            </Text>
+          </VStack>
+        </Center>
+      </Box>
+    );
   }
 
   const { days, lat, lon, obs, forecast, difference } = timeSeriesData;
@@ -45,19 +64,19 @@ function TimeSeriesChart() {
   };
 
   return (
-    <VStack spacing={4} h="100%" align="stretch">
+    <VStack gap={4} h="100%" align="stretch">
       {/* Header */}
       <Box>
         <HStack justify="space-between" mb={2}>
           <Heading size="sm" color="gray.700">
             Time Series
           </Heading>
-          <Badge colorScheme="blue" fontSize="xs" px={2} py={1} borderRadius="md">
+          <Badge colorPalette="blue" fontSize="xs" px={2} py={1} borderRadius="md">
             {varInfo.shortName}
           </Badge>
         </HStack>
 
-        <HStack spacing={2} fontSize="sm" color="gray.600">
+        <HStack gap={2} fontSize="sm" color="gray.600">
           <Text fontWeight="500">Location:</Text>
           <Text>
             {Math.abs(lat).toFixed(2)}°{lat < 0 ? 'S' : 'N'},{' '}

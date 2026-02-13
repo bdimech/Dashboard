@@ -20,7 +20,7 @@ function MapLegend() {
   const gradient = generateGradientString(variable, dataType, range);
 
   return (
-    <VStack spacing={2} align="stretch" bg="gray.50" p={3} borderRadius="md">
+    <VStack gap={2} align="stretch" bg="gray.50" p={3} borderRadius="md">
       <HStack justify="space-between">
         <Text fontSize="sm" fontWeight="600" color="gray.700">
           {varInfo.name}
@@ -34,7 +34,7 @@ function MapLegend() {
       <Box position="relative">
         <Box
           h="20px"
-          bgGradient={gradient}
+          background={gradient}
           borderRadius="sm"
           border="1px solid"
           borderColor="gray.300"

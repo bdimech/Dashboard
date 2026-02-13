@@ -31,13 +31,13 @@ function DaySlider() {
 
   return (
     <Box>
-      <VStack spacing={4} align="stretch">
+      <VStack gap={4} align="stretch">
         {/* Current selection badge */}
         <HStack justify="space-between">
           <Text fontSize="sm" fontWeight="500" color="gray.600">
             Day {day}
           </Text>
-          <Badge colorScheme="blue" fontSize="md" px={3} py={1} borderRadius="md">
+          <Badge colorPalette="blue" fontSize="md" px={3} py={1} borderRadius="md">
             {formatDate(times[day])}
           </Badge>
         </HStack>

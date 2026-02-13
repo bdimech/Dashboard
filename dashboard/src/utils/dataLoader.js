@@ -12,24 +12,16 @@ export async function loadMeteorologicalData() {
   try {
     console.log('Loading meteorological data...');
 
-    // Fetch compressed data
-    const response = await fetch('/data/meteorological_data.json.gz');
+    // Try uncompressed JSON first (easier for debugging)
+    const response = await fetch('/data/meteorological_data.json');
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    // Get as array buffer
-    const buffer = await response.arrayBuffer();
-    console.log(`  Downloaded: ${(buffer.byteLength / 1024 / 1024).toFixed(2)} MB`);
-
-    // Decompress with pako
-    console.log('  Decompressing...');
-    const decompressed = pako.inflate(new Uint8Array(buffer), { to: 'string' });
-
-    // Parse JSON
+    // Parse JSON directly
     console.log('  Parsing JSON...');
-    const data = JSON.parse(decompressed);
+    const data = await response.json();
 
     console.log('  Data loaded successfully!');
     console.log(`    Variables: ${Object.keys(data.obs).length}`);

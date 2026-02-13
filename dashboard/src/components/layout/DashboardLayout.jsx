@@ -2,12 +2,12 @@
  * Main dashboard layout - 3-column grid
  */
 
-import { Grid, GridItem, Box, Spinner, Center, Text, VStack, Alert, AlertIcon, AlertTitle, AlertDescription } from '@chakra-ui/react';
+import { Grid, GridItem, Box, Spinner, Center, Text, VStack } from '@chakra-ui/react';
+import { Alert } from '@chakra-ui/react';
 import { useDataStore } from '../../store/dataStore';
 import Header from './Header';
 import LeftPanel from '../controls/LeftPanel';
 import MapPanel from '../map/MapPanel';
-import RightPanel from '../chart/RightPanel';
 
 function DashboardLayout() {
   const isLoading = useDataStore((state) => state.isLoading);
@@ -17,7 +17,7 @@ function DashboardLayout() {
   if (isLoading) {
     return (
       <Center h="100vh" bg="gray.50">
-        <VStack spacing={4}>
+        <VStack gap={4}>
           <Spinner
             thickness="4px"
             speed="0.65s"
@@ -40,7 +40,7 @@ function DashboardLayout() {
   if (error) {
     return (
       <Center h="100vh" bg="gray.50" p={8}>
-        <Alert
+        <Alert.Root
           status="error"
           variant="subtle"
           flexDirection="column"
@@ -51,35 +51,34 @@ function DashboardLayout() {
           borderRadius="xl"
           maxW="600px"
         >
-          <AlertIcon boxSize="40px" mr={0} />
-          <AlertTitle mt={4} mb={1} fontSize="lg">
+          <Alert.Indicator boxSize="40px" mr={0} />
+          <Alert.Title mt={4} mb={1} fontSize="lg">
             Failed to Load Data
-          </AlertTitle>
-          <AlertDescription maxWidth="sm" mt={2}>
+          </Alert.Title>
+          <Alert.Description maxWidth="sm" mt={2}>
             {error}
             <br />
             <br />
             Please ensure the data files are in public/data/ directory.
-          </AlertDescription>
-        </Alert>
+          </Alert.Description>
+        </Alert.Root>
       </Center>
     );
   }
 
   // Main dashboard layout
   return (
-    <Grid
-      templateAreas={`
-        "header header header"
-        "left center right"
-      `}
-      gridTemplateRows={'70px 1fr'}
-      gridTemplateColumns={'300px 1fr 420px'}
-      h="100vh"
-      gap={4}
-      p={4}
-      bg="gray.50"
-    >
+    <Box h="100vh" w="100vw" bg="gray.50" display="flex" justifyContent="center" p={4}>
+      <Grid
+        templateAreas={`
+          "header header"
+          "left center"
+        `}
+        gridTemplateRows={'70px 1fr'}
+        gridTemplateColumns={'420px 800px'}
+        h="calc(100vh - 32px)"
+        gap={4}
+      >
       {/* Header */}
       <GridItem area="header">
         <Box bg="white" borderRadius="xl" p={4} shadow="sm" h="100%">
@@ -87,7 +86,7 @@ function DashboardLayout() {
         </Box>
       </GridItem>
 
-      {/* Left Panel - Controls */}
+      {/* Left Panel - Controls and Chart */}
       <GridItem area="left">
         <Box bg="white" borderRadius="xl" p={6} shadow="sm" h="100%" overflowY="auto">
           <LeftPanel />
@@ -100,14 +99,8 @@ function DashboardLayout() {
           <MapPanel />
         </Box>
       </GridItem>
-
-      {/* Right Panel - Chart */}
-      <GridItem area="right">
-        <Box bg="white" borderRadius="xl" p={6} shadow="sm" h="100%" overflowY="auto">
-          <RightPanel />
-        </Box>
-      </GridItem>
-    </Grid>
+      </Grid>
+    </Box>
   );
 }
 

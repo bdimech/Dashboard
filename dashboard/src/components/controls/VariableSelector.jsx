@@ -2,7 +2,7 @@
  * Variable selector dropdown
  */
 
-import { Select } from '@chakra-ui/react';
+import { NativeSelectRoot, NativeSelectField } from '@chakra-ui/react';
 import { useDataStore } from '../../store/dataStore';
 import { VARIABLES, getVariableList } from '../../constants/variables';
 
@@ -17,22 +17,23 @@ function VariableSelector() {
   };
 
   return (
-    <Select
-      value={variable}
-      onChange={handleChange}
-      size="lg"
-      variant="filled"
-      fontWeight="500"
-    >
-      {variables.map((varName) => {
-        const info = VARIABLES[varName];
-        return (
-          <option key={varName} value={varName}>
-            {info.name}
-          </option>
-        );
-      })}
-    </Select>
+    <NativeSelectRoot size="lg" variant="subtle">
+      <NativeSelectField
+        value={variable}
+        onChange={handleChange}
+        fontWeight="500"
+        color="black"
+      >
+        {variables.map((varName) => {
+          const info = VARIABLES[varName];
+          return (
+            <option key={varName} value={varName}>
+              {info.name}
+            </option>
+          );
+        })}
+      </NativeSelectField>
+    </NativeSelectRoot>
   );
 }
 

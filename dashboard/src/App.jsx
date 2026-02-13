@@ -2,12 +2,12 @@
  * Main App component
  */
 
-import { ChakraProvider } from '@chakra-ui/react';
+import { ChakraProvider, defaultSystem } from '@chakra-ui/react';
 import DashboardLayout from './components/layout/DashboardLayout';
 
 function App() {
   return (
-    <ChakraProvider>
+    <ChakraProvider value={defaultSystem}>
       <DashboardLayout />
     </ChakraProvider>
   );

@@ -2,7 +2,7 @@
  * Right panel container for time series chart
  */
 
-import { Box, Center, Text, VStack, Icon } from '@chakra-ui/react';
+import { Box, Center, Text, VStack } from '@chakra-ui/react';
 import { MdLocationOn } from 'react-icons/md';
 import { useDataStore } from '../../store/dataStore';
 import TimeSeriesChart from './TimeSeriesChart';
@@ -15,8 +15,8 @@ function RightPanel() {
     return (
       <Box h="100%">
         <Center h="100%">
-          <VStack spacing={4}>
-            <Icon as={MdLocationOn} boxSize={12} color="gray.300" />
+          <VStack gap={4}>
+            <MdLocationOn size={48} color="#CBD5E0" />
             <Text color="gray.500" textAlign="center" fontSize="sm">
               Click on the map to view
               <br />
