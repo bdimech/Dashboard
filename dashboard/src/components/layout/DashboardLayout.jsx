@@ -22,7 +22,7 @@ function DashboardLayout() {
             thickness="4px"
             speed="0.65s"
             emptyColor="gray.200"
-            color="brand.500"
+            color="blue.500"
             size="xl"
           />
           <Text color="gray.600" fontSize="lg">

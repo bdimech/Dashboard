@@ -52,7 +52,7 @@ function TimeSeriesChart() {
           <Heading size="sm" color="gray.700">
             Time Series
           </Heading>
-          <Badge colorScheme="brand" fontSize="xs" px={2} py={1} borderRadius="md">
+          <Badge colorScheme="blue" fontSize="xs" px={2} py={1} borderRadius="md">
             {varInfo.shortName}
           </Badge>
         </HStack>

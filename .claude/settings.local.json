@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python scripts/generate_mock_data.py:*)",
+      "Bash(pip install:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd 500km rainfall event with forecast overprediction\n\nImplement a 500km-wide rainfall band that moves west-to-east alongside the existing heatwave. The rainfall event has peak observed values of 10-30mm/day.\n\nGenerate separate observation and forecast datasets where the forecast maintains the correct spatial pattern but overpredicts rainfall volume by approximately 40%.\n\nUpdate the notebook with interactive variable and day selection controls, allowing users to easily switch between temperature and precipitation visualizations.\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nChange rainfall event to circular 250km radius pattern\n\nReplace the 500km-wide rainfall band with a circular rainfall system \\(250km radius\\) that resembles a low-pressure system. The circular pattern moves west-to-east along latitude -27° \\(central Australia\\) while the heatwave continues to move as an elongated band.\n\nThis creates more realistic meteorological dynamics with a compact circular rainfall system alongside the broader heatwave pattern.\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd 9 additional meteorological variables with quick mock data\n\nImplement simple mock data generation for 9 new variables using baseline + latitude gradient + noise approach. All variables now available in observation and forecast datasets.\n\nNew variables:\n- tmin \\(Daily Minimum Temperature\\)\n- rh \\(Relative Humidity\\)\n- wind_avg, wind_gust \\(Wind speeds\\)\n- pressure_sfc \\(Surface Pressure\\)\n- geopotential_850/700/500/250 \\(Geopotential heights\\)\n\nUpdate notebook with colormaps for all 11 variables. Dataset size now 76MB with complete meteorological coverage.\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "WebSearch",
+      "Bash(python:*)",
+      "Bash(gh issue create:*)",
+      "Bash(git checkout:*)",
+      "Bash(npm create:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run dev:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nImplement meteorological dashboard with React\n\nFeatures implemented:\n- Data preprocessing script to convert Zarr to JSON \\(6.8MB compressed\\)\n- React dashboard with Chakra UI \\(Horizon UI-inspired design\\)\n- Zustand state management for global app state\n- 3-column layout: controls \\(left\\), map \\(center\\), time series \\(right\\)\n- HTML5 Canvas map visualization with color-coded gridded data\n- Interactive point selection with click detection\n- Time series chart using Recharts \\(obs, forecast, difference\\)\n- Control panels: data type selector, variable selector, day slider\n- 11 meteorological variables with variable-specific color scales\n- Map legend with dynamic color gradients\n- Australia boundary overlay\n\nTech stack:\n- React 18 + Vite\n- Chakra UI v2 for components and styling\n- Zustand for state management\n- Recharts for time series visualization\n- chroma-js for scientific color scales\n- pako for gzip decompression\n\nResolves #2\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(cat:*)",
+      "Bash(npm run build:*)",
+      "Bash(git commit:*)"
+    ]
+  }
+}

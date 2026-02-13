@@ -4,16 +4,11 @@
 
 import {
   Box,
-  Slider,
-  SliderTrack,
-  SliderFilledTrack,
-  SliderThumb,
   HStack,
   Text,
   Badge,
   VStack,
 } from '@chakra-ui/react';
-import { MdCalendarToday } from 'react-icons/md';
 import { useDataStore } from '../../store/dataStore';
 
 function DaySlider() {
@@ -25,8 +20,8 @@ function DaySlider() {
 
   const { times } = metadata;
 
-  const handleChange = (value) => {
-    setDay(value);
+  const handleChange = (e) => {
+    setDay(parseInt(e.target.value));
   };
 
   const formatDate = (dateStr) => {
@@ -42,28 +37,29 @@ function DaySlider() {
           <Text fontSize="sm" fontWeight="500" color="gray.600">
             Day {day}
           </Text>
-          <Badge colorScheme="brand" fontSize="md" px={3} py={1} borderRadius="md">
+          <Badge colorScheme="blue" fontSize="md" px={3} py={1} borderRadius="md">
             {formatDate(times[day])}
           </Badge>
         </HStack>
 
-        {/* Slider */}
+        {/* HTML range slider (simpler, no Chakra UI v3 compatibility issues) */}
         <Box px={2}>
-          <Slider
-            value={day}
-            onChange={handleChange}
+          <input
+            type="range"
             min={0}
             max={times.length - 1}
             step={1}
-            colorScheme="brand"
-          >
-            <SliderTrack bg="gray.200">
-              <SliderFilledTrack />
-            </SliderTrack>
-            <SliderThumb boxSize={6} boxShadow="md">
-              <Box color="brand.500" as={MdCalendarToday} />
-            </SliderThumb>
-          </Slider>
+            value={day}
+            onChange={handleChange}
+            style={{
+              width: '100%',
+              height: '6px',
+              borderRadius: '5px',
+              background: '#cbd5e0',
+              outline: 'none',
+              cursor: 'pointer'
+            }}
+          />
         </Box>
 
         {/* Min/Max labels */}
@@ -83,11 +79,11 @@ function DaySlider() {
               key={idx}
               w="2px"
               h="8px"
-              bg={idx === day ? 'brand.500' : 'gray.300'}
+              bg={idx === day ? 'blue.500' : 'gray.300'}
               borderRadius="full"
               cursor="pointer"
               onClick={() => setDay(idx)}
-              _hover={{ bg: 'brand.400' }}
+              _hover={{ bg: 'blue.400' }}
             />
           ))}
         </HStack>

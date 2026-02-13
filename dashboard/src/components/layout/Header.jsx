@@ -13,7 +13,7 @@ function Header() {
         <Heading size="md" color="gray.800">
           Meteorological Dashboard
         </Heading>
-        <Badge colorScheme="brand" fontSize="xs" px={2} py={1} borderRadius="md">
+        <Badge colorScheme="blue" fontSize="xs" px={2} py={1} borderRadius="md">
           Australia
         </Badge>
       </HStack>
