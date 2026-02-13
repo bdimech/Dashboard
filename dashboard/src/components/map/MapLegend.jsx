@@ -20,8 +20,8 @@ function MapLegend() {
   const gradient = generateGradientString(variable, dataType, range);
 
   return (
-    <VStack gap={2} align="stretch" bg="gray.50" p={3} borderRadius="md">
-      <HStack justify="space-between">
+    <Box bg="gray.50" p={2} borderRadius="md">
+      <HStack justify="space-between" mb={0.5}>
         <Text fontSize="sm" fontWeight="600" color="gray.700">
           {varInfo.name}
         </Text>
@@ -31,33 +31,32 @@ function MapLegend() {
       </HStack>
 
       {/* Gradient bar */}
-      <Box position="relative">
-        <Box
-          h="20px"
-          background={gradient}
-          borderRadius="sm"
-          border="1px solid"
-          borderColor="gray.300"
-        />
+      <Box
+        h="14px"
+        background={gradient}
+        borderRadius="sm"
+        border="1px solid"
+        borderColor="gray.300"
+        mb={0.5}
+      />
 
-        {/* Min/Max labels */}
-        <HStack justify="space-between" mt={1}>
-          <Text fontSize="xs" fontWeight="500" color="gray.600">
-            {formatValue(range.min, variable)}
-          </Text>
-          <Text fontSize="xs" fontWeight="500" color="gray.600">
-            {formatValue(range.max, variable)}
-          </Text>
-        </HStack>
-      </Box>
+      {/* Min/Max labels */}
+      <HStack justify="space-between">
+        <Text fontSize="xs" fontWeight="500" color="gray.600">
+          {formatValue(range.min, variable)}
+        </Text>
+        <Text fontSize="xs" fontWeight="500" color="gray.600">
+          {formatValue(range.max, variable)}
+        </Text>
+      </HStack>
 
       {/* Data type indicator for difference */}
       {dataType === 'difference' && (
-        <Text fontSize="xs" color="gray.500" fontStyle="italic">
+        <Text fontSize="xs" color="gray.500" fontStyle="italic" mt={0.5}>
           Positive = Obs &gt; Forecast, Negative = Obs &lt; Forecast
         </Text>
       )}
-    </VStack>
+    </Box>
   );
 }
 

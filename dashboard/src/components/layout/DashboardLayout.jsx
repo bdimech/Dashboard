@@ -8,6 +8,7 @@ import { useDataStore } from '../../store/dataStore';
 import Header from './Header';
 import LeftPanel from '../controls/LeftPanel';
 import MapPanel from '../map/MapPanel';
+import TimeSeriesChart from '../chart/TimeSeriesChart';
 
 function DashboardLayout() {
   const isLoading = useDataStore((state) => state.isLoading);
@@ -73,9 +74,10 @@ function DashboardLayout() {
         templateAreas={`
           "header header"
           "left center"
+          "bottom bottom"
         `}
-        gridTemplateRows={'70px 1fr'}
-        gridTemplateColumns={'420px 800px'}
+        gridTemplateRows={'70px 1fr 300px'}
+        gridTemplateColumns={'280px 900px'}
         h="calc(100vh - 32px)"
         gap={4}
       >
@@ -86,17 +88,24 @@ function DashboardLayout() {
         </Box>
       </GridItem>
 
-      {/* Left Panel - Controls and Chart */}
+      {/* Left Panel - Controls and Legend */}
       <GridItem area="left">
-        <Box bg="white" borderRadius="xl" p={6} shadow="sm" h="100%" overflowY="auto">
+        <Box bg="white" borderRadius="xl" pt={3} pb={3} pl={4} pr={4} shadow="sm" h="100%" overflowY="auto">
           <LeftPanel />
         </Box>
       </GridItem>
 
       {/* Center Panel - Map */}
       <GridItem area="center">
-        <Box bg="white" borderRadius="xl" p={4} shadow="sm" h="100%">
+        <Box bg="white" borderRadius="xl" pt={1} pb={1} pl={2} pr={2} shadow="sm" h="100%">
           <MapPanel />
+        </Box>
+      </GridItem>
+
+      {/* Bottom Panel - Time Series Chart (Full Width) */}
+      <GridItem area="bottom">
+        <Box bg="white" borderRadius="xl" p={4} shadow="sm" h="100%">
+          <TimeSeriesChart />
         </Box>
       </GridItem>
       </Grid>

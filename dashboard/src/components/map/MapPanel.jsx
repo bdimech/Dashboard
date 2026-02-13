@@ -1,24 +1,15 @@
 /**
- * Map panel container with canvas map and legend
+ * Map panel container with just the canvas map
  */
 
-import { VStack, Box } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
 import MapCanvas from './MapCanvas';
-import MapLegend from './MapLegend';
 
 function MapPanel() {
   return (
-    <VStack gap={3} h="100%" align="stretch">
-      {/* Map canvas - takes most of the space */}
-      <Box flex="1" minH="0">
-        <MapCanvas />
-      </Box>
-
-      {/* Legend at bottom */}
-      <Box>
-        <MapLegend />
-      </Box>
-    </VStack>
+    <Box h="100%" w="100%">
+      <MapCanvas />
+    </Box>
   );
 }
 

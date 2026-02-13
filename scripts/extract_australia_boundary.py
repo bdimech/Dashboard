@@ -10,8 +10,9 @@ from pathlib import Path
 def extract_australia_boundary():
     """Extract Australia boundary and save to GeoJSON."""
 
-    print("Loading Natural Earth country boundaries...")
-    countries = regionmask.defined_regions.natural_earth_v5_0_0.countries_110
+    print("Loading Natural Earth country boundaries (10m resolution)...")
+    # Use 10m resolution for much better detail
+    countries = regionmask.defined_regions.natural_earth_v5_0_0.countries_10
 
     # Get the Australia region (index 137)
     australia_idx = 137
@@ -33,8 +34,8 @@ def extract_australia_boundary():
         crs='EPSG:4326'
     )
 
-    # Save to GeoJSON
-    output_path = Path(__file__).parent.parent / "data" / "australia_boundary.geojson"
+    # Save to GeoJSON in dashboard public folder
+    output_path = Path(__file__).parent.parent / "dashboard" / "public" / "data" / "australia_boundary.json"
     print(f"Saving boundary to {output_path}...")
     gdf.to_file(output_path, driver='GeoJSON')
 

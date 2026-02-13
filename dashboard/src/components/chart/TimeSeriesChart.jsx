@@ -21,6 +21,7 @@ import { VARIABLES } from '../../constants/variables';
 function TimeSeriesChart() {
   const getTimeSeriesData = useDataStore((state) => state.getTimeSeriesData);
   const variable = useDataStore((state) => state.variable);
+  const selectedPoint = useDataStore((state) => state.selectedPoint);
 
   const timeSeriesData = getTimeSeriesData();
   const varInfo = VARIABLES[variable];
@@ -30,7 +31,7 @@ function TimeSeriesChart() {
     return (
       <Box h="100%">
         <Heading size="sm" mb={3} color="gray.700">
-          Time Series
+          {varInfo.name} ({varInfo.unit})
         </Heading>
         <Center h="calc(100% - 40px)" minH="200px">
           <VStack gap={3}>
@@ -64,40 +65,35 @@ function TimeSeriesChart() {
   };
 
   return (
-    <VStack gap={4} h="100%" align="stretch">
+    <VStack gap={2} h="100%" align="stretch">
       {/* Header */}
-      <Box>
-        <HStack justify="space-between" mb={2}>
-          <Heading size="sm" color="gray.700">
-            Time Series
-          </Heading>
-          <Badge colorPalette="blue" fontSize="xs" px={2} py={1} borderRadius="md">
-            {varInfo.shortName}
-          </Badge>
-        </HStack>
-
-        <HStack gap={2} fontSize="sm" color="gray.600">
+      <HStack justify="space-between">
+        <Heading size="sm" color="gray.700">
+          {varInfo.name} ({varInfo.unit})
+        </Heading>
+        <HStack gap={2} fontSize="xs" color="gray.600">
           <Text fontWeight="500">Location:</Text>
           <Text>
             {Math.abs(lat).toFixed(2)}°{lat < 0 ? 'S' : 'N'},{' '}
             {Math.abs(lon).toFixed(2)}°{lon < 0 ? 'W' : 'E'}
           </Text>
         </HStack>
-      </Box>
+      </HStack>
 
       {/* Chart */}
       <Box flex="1" minH="0">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={chartData}
-            margin={{ top: 5, right: 5, left: 0, bottom: 20 }}
+            margin={{ top: 5, right: 5, left: -20, bottom: 5 }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
 
             <XAxis
               dataKey="day"
-              tick={{ fontSize: 11, fill: '#718096' }}
+              tick={{ fontSize: 10, fill: '#718096' }}
               tickLine={{ stroke: '#cbd5e0' }}
+              height={30}
             />
 
             <YAxis
@@ -105,10 +101,11 @@ function TimeSeriesChart() {
                 value: varInfo.unit,
                 angle: -90,
                 position: 'insideLeft',
-                style: { fontSize: 12, fill: '#718096' }
+                style: { fontSize: 11, fill: '#718096' }
               }}
-              tick={{ fontSize: 11, fill: '#718096' }}
+              tick={{ fontSize: 10, fill: '#718096' }}
               tickLine={{ stroke: '#cbd5e0' }}
+              width={50}
             />
 
             <Tooltip
@@ -131,8 +128,9 @@ function TimeSeriesChart() {
             />
 
             <Legend
-              wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
+              wrapperStyle={{ fontSize: '11px', paddingTop: '5px' }}
               iconType="line"
+              height={25}
             />
 
             <Line
@@ -170,13 +168,6 @@ function TimeSeriesChart() {
             />
           </LineChart>
         </ResponsiveContainer>
-      </Box>
-
-      {/* Footer info */}
-      <Box fontSize="xs" color="gray.500" pt={2} borderTop="1px solid" borderColor="gray.100">
-        <Text>
-          Blue = Observations | Red = Forecast | Green = Difference (Obs - Forecast)
-        </Text>
       </Box>
     </VStack>
   );

@@ -1,18 +1,18 @@
 /**
- * Left panel containing all control components and time series chart
+ * Left panel containing all control components and legend
  */
 
 import { VStack, Box, Heading } from '@chakra-ui/react';
 import DataTypeSelector from './DataTypeSelector';
 import VariableSelector from './VariableSelector';
 import DaySlider from './DaySlider';
-import TimeSeriesChart from '../chart/TimeSeriesChart';
+import MapLegend from '../map/MapLegend';
 
 function LeftPanel() {
   return (
-    <VStack gap={6} align="stretch" h="100%">
+    <VStack gap={3} align="stretch" h="100%">
       <Box>
-        <Heading size="sm" mb={3} color="gray.700">
+        <Heading size="sm" mb={2} color="gray.700">
           Data Source
         </Heading>
         <DataTypeSelector />
@@ -21,7 +21,7 @@ function LeftPanel() {
       <Box h="1px" bg="gray.200" />
 
       <Box>
-        <Heading size="sm" mb={3} color="gray.700">
+        <Heading size="sm" mb={2} color="gray.700">
           Variable
         </Heading>
         <VariableSelector />
@@ -30,7 +30,7 @@ function LeftPanel() {
       <Box h="1px" bg="gray.200" />
 
       <Box>
-        <Heading size="sm" mb={4} color="gray.700">
+        <Heading size="sm" mb={2} color="gray.700">
           Time Selection
         </Heading>
         <DaySlider />
@@ -38,10 +38,12 @@ function LeftPanel() {
 
       <Box h="1px" bg="gray.200" />
 
-      {/* Time Series Chart */}
-      <Box flex="1" minH="300px">
-        <TimeSeriesChart />
+      {/* Legend */}
+      <Box>
+        <MapLegend />
       </Box>
+
+      <Box flex="1" />
     </VStack>
   );
 }

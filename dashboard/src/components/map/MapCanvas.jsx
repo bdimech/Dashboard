@@ -99,7 +99,7 @@ function MapCanvas() {
     };
 
     const canvasSize = { width: canvas.width, height: canvas.height };
-    const padding = { top: 20, bottom: 40, left: 40, right: 20 };
+    const padding = { top: 10, bottom: 10, left: 10, right: 10 };
 
     // Convert pixel to lat/lon
     const [lat, lon] = pixelToLatLon(x, y, bounds, canvasSize, padding);
@@ -115,8 +115,6 @@ function MapCanvas() {
       latIdx,
       lonIdx
     });
-
-    console.log(`Clicked: (${lat.toFixed(2)}, ${lon.toFixed(2)}) -> Grid: [${latIdx}, ${lonIdx}]`);
   };
 
   return (

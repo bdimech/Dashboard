@@ -38,7 +38,7 @@ export function renderMap(canvas, data, metadata, variable, dataType, range, bou
   };
 
   const canvasSize = { width, height };
-  const padding = { top: 20, bottom: 40, left: 40, right: 20 };
+  const padding = { top: 10, bottom: 10, left: 10, right: 10 };
 
   // Draw grid cells
   for (let i = 0; i < lats.length - 1; i++) {
@@ -73,28 +73,46 @@ export function renderMap(canvas, data, metadata, variable, dataType, range, bou
   if (boundary) {
     drawBoundary(ctx, boundary, bounds, canvasSize, padding);
   }
-
-  // Draw axes
-  drawAxes(ctx, bounds, canvasSize, padding);
 }
 
 /**
  * Draw Australia boundary
  */
 function drawBoundary(ctx, boundary, bounds, canvasSize, padding) {
-  if (!boundary || !boundary.geometry || !boundary.geometry.coordinates) {
+  if (!boundary || !boundary.features || !boundary.features[0]) {
     return;
   }
 
-  const coords = boundary.geometry.coordinates;
+  const feature = boundary.features[0];
+  const geometry = feature.geometry;
 
-  ctx.strokeStyle = '#333333';
+  ctx.strokeStyle = '#2d3748';
   ctx.lineWidth = 2;
+
+  if (geometry.type === 'MultiPolygon') {
+    // MultiPolygon: array of polygons, each polygon is array of rings
+    for (const polygon of geometry.coordinates) {
+      for (const ring of polygon) {
+        drawRing(ctx, ring, bounds, canvasSize, padding);
+      }
+    }
+  } else if (geometry.type === 'Polygon') {
+    // Polygon: array of rings
+    for (const ring of geometry.coordinates) {
+      drawRing(ctx, ring, bounds, canvasSize, padding);
+    }
+  }
+}
+
+/**
+ * Draw a single ring (polygon boundary or hole)
+ */
+function drawRing(ctx, ring, bounds, canvasSize, padding) {
   ctx.beginPath();
 
   let firstPoint = true;
 
-  for (const [lon, lat] of coords) {
+  for (const [lon, lat] of ring) {
     const [x, y] = latLonToPixel(lat, lon, bounds, canvasSize, padding);
 
     if (firstPoint) {
