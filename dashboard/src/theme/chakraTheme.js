@@ -1,17 +1,14 @@
 /**
  * Custom Chakra UI theme - Horizon UI inspired
+ * Using Chakra UI v3 - simplified theme without extendTheme
  */
 
-import { extendTheme } from '@chakra-ui/react';
+// For Chakra UI v3, we'll use a simpler approach with the default theme
+// and customize via component props and style overrides
 
-const theme = extendTheme({
+const theme = {
   config: {
     initialColorMode: 'light',
-    useSystemColorMode: false,
-  },
-  fonts: {
-    heading: `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`,
-    body: `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`,
   },
   colors: {
     brand: {
@@ -27,51 +24,6 @@ const theme = extendTheme({
       900: '#00121a',
     },
   },
-  components: {
-    Button: {
-      defaultProps: {
-        colorScheme: 'brand',
-      },
-      variants: {
-        solid: {
-          bg: 'brand.500',
-          color: 'white',
-          _hover: {
-            bg: 'brand.600',
-          },
-        },
-      },
-    },
-    Heading: {
-      baseStyle: {
-        fontWeight: '700',
-      },
-    },
-    Select: {
-      variants: {
-        filled: {
-          field: {
-            bg: 'gray.50',
-            _hover: {
-              bg: 'gray.100',
-            },
-            _focus: {
-              bg: 'white',
-              borderColor: 'brand.500',
-            },
-          },
-        },
-      },
-    },
-  },
-  styles: {
-    global: {
-      'html, body': {
-        bg: 'gray.50',
-        fontFamily: 'body',
-      },
-    },
-  },
-});
+};
 
 export default theme;
